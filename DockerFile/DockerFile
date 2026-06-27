@@ -1,0 +1,55 @@
+FROM  rockylinux/rockylinux:9.8
+
+
+VOLUME  ["/ISO","/iso"]
+
+ENV local_ip=127.0.0.1
+ENV next_ip=
+ENV netmask=
+ENV gateway=
+ENV nameserver=
+ENV range_start=
+ENV range_end=
+ENV arch=x86
+ENV ks=
+ENV iso=
+ENV iso_label=
+
+
+ENV     http_web_port=
+
+    
+WORKDIR  /var/lib/tftpboot
+EXPOSE   67
+EXPOSE   69
+EXPOSE   80
+
+
+ADD   fping-3.10-4.el7.x86_64.rpm  /root/
+RUN   yum install  -y  iproute procps-ng  grep telnet findutils  xorriso  openssl  dhcp-server tftp-server tftp   httpd  vim  net-tools  && \
+      mkdir /var/run/dhcpd/ && touch /var/run/dhcpd/dhcpd.leases && chown -R dhcpd:dhcpd  /var/run/dhcpd && \
+      echo "set paste" > ~/.vimrc  && source ~/.vimrc   && \
+      rpm -ivh /root/fping-3.10-4.el7.x86_64.rpm --force --nodeps  && \
+      yum clean all 
+       
+
+COPY  entrypoint.sh  /
+ADD   tftp         /etc/xinetd.d/tftp 
+ADD   dhcpd.conf   /
+ADD   grub.tar     /opt  
+ADD   grub.cfg     /opt
+ADD   default.ks   /default.ks
+ADD   default.ks-bak   /default.ks-bak
+ADD   BOOTAA64.EFI /opt/
+ADD   mmaa64.efi   /opt/
+ADD   grubaa64.efi /opt/  
+ADD   grubx64.efi /opt/  
+ADD   ping_batch.sh                /root/
+ADD   start.sh                /
+ADD   00-mpm.sh               / 
+
+ENV   subnet=
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+#ENTRYPOINT

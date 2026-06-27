@@ -1,0 +1,20 @@
+
+ddns-update-style interim;
+ignore client-updates;
+allow booting;
+allow bootp;
+
+subnet 1.1.1.0 netmask 255.255.255.255 {                 #指定为那个网段分配网络参数
+   range 1.1.1.10   1.1.1.20;               #设置准备为客户端分配的IP地址范围
+   option domain-name-servers 114.114.114.114;             #设置分配给客户端的DNS服务器地址
+   #option domain-name-servers 114.114.114.114;         #设置分配给客户端的DNS服务器地址
+   option routers 1.1.1.1;                         #设置分配给客户端的网关地址。
+   #default-lease-time 600;                              # 地址租赁时间 600秒后失效
+   default-lease-time 2592000;                          # 地址租赁时间 30天后失效
+   #max-lease-time 7200;                                 #最大租约时间12小时
+   max-lease-time 2592000;                              #最大租约时间30天
+   next-server 1.1.1.2;       # 下一个要访问的地址，就是tftp地址。默认使用本机IP
+   filename "grubx64.efi";
+   #filename "grubaa64.efi";
+}
+
